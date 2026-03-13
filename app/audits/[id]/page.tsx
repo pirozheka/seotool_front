@@ -636,7 +636,7 @@ export default function AuditPage({ params }: AuditPageProps) {
 
   return (
     <main className="page-shell space-y-6">
-      <section className="surface-card motion-fade-up relative overflow-hidden">
+      <section className="surface-card motion-fade-up relative z-50 overflow-visible hover:z-50 focus-within:z-50">
         <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full bg-cyan-200/50 blur-3xl dark:bg-cyan-500/25" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
