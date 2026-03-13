@@ -572,6 +572,7 @@ export default async function AuditPage({ params }: AuditPageProps) {
   const serverInfo: ServerInfoCheck = asRecord(siteChecks.server_info) as ServerInfoCheck
   const sslCertificate: SslCertificateCheck = asRecord(siteChecks.ssl_certificate) as SslCertificateCheck
   const domainInfo: DomainInfoCheck = asRecord(siteChecks.domain_info) as DomainInfoCheck
+  const auditWarnings: string[] = asArray<string>(audit.warnings)
   const siteWarnings: string[] = asArray<string>(siteChecksRoot.warnings)
 
   const topResources = asArray<PageResourceItem>(pageWeight.resources)
@@ -807,9 +808,9 @@ export default async function AuditPage({ params }: AuditPageProps) {
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="surface-card motion-fade-up motion-delay-2">
           <h2 className="section-title">Предупреждения страницы</h2>
-          {audit.warnings?.length ? (
+          {auditWarnings.length ? (
             <ul className="mt-3 space-y-2">
-              {audit.warnings.map((warning: string, index: number) => (
+              {auditWarnings.map((warning: string, index: number) => (
                 <li key={index} className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200">
                   {translateWarning(warning)}
                 </li>

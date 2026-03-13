@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 const displayFont = Manrope({
   variable: "--font-display",
-  subsets: ["latin", "cyrillic"],
-});
-
-const monoFont = IBM_Plex_Mono({
-  variable: "--font-mono",
-  weight: ["400", "500"],
   subsets: ["latin", "cyrillic"],
 });
 
@@ -40,11 +34,11 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className={`${displayFont.variable} ${monoFont.variable} min-h-screen antialiased`}>
+      <body className={`${displayFont.variable} min-h-screen antialiased`}>
         <ThemeToggle />
         <div className="min-h-screen">{children}</div>
       </body>
