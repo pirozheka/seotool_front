@@ -1,8 +1,11 @@
+"use client"
+
 import Link from "next/link"
 import { CircleHelp } from "lucide-react"
+import { use, useEffect, useState } from "react"
 
 import { DeleteAuditButton } from "@/components/DeleteAuditButton"
-import { getAudit } from "@/lib/api"
+import { getAudit, type AuditPayload } from "@/lib/api"
 
 type AuditPageProps = {
   params: Promise<{
@@ -534,15 +537,63 @@ const fieldLabelMeta: Record<string, { label?: string; hint?: SeoHint }> = {
   "IP адреса": { hint: pageMetricHints.ipAddresses },
 }
 
-export default async function AuditPage({ params }: AuditPageProps) {
-  const { id } = await params
-  let audit: Awaited<ReturnType<typeof getAudit>>
+export default function AuditPage({ params }: AuditPageProps) {
+  const { id } = use(params)
+  const [audit, setAudit] = useState<AuditPayload | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  try {
-    audit = await getAudit(id)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Не удалось загрузить аудит"
+  useEffect(() => {
+    let active = true
 
+    const loadAudit = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getAudit(id)
+        if (!active) return
+        setAudit(data)
+      } catch (fetchError) {
+        if (!active) return
+        const message = fetchError instanceof Error ? fetchError.message : "Не удалось загрузить аудит"
+        setError(message)
+        setAudit(null)
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadAudit()
+
+    return () => {
+      active = false
+    }
+  }, [id])
+
+  if (loading) {
+    return (
+      <main className="page-shell">
+        <section className="surface-card motion-fade-up">
+          <Link
+            href="/"
+            className="inline-flex text-sm text-cyan-700 hover:text-cyan-800 hover:underline dark:text-cyan-300 dark:hover:text-cyan-200"
+          >
+            ← К списку аудитов
+          </Link>
+          <h1 className="section-title mt-4 text-3xl sm:text-4xl">Загрузка аудита</h1>
+          <div className="mt-4 space-y-3">
+            <div className="h-12 animate-pulse rounded-2xl border border-slate-200 bg-slate-100/70 dark:border-slate-700/70 dark:bg-slate-800/70" />
+            <div className="h-28 animate-pulse rounded-2xl border border-slate-200 bg-slate-100/70 dark:border-slate-700/70 dark:bg-slate-800/70" />
+            <div className="h-28 animate-pulse rounded-2xl border border-slate-200 bg-slate-100/70 dark:border-slate-700/70 dark:bg-slate-800/70" />
+          </div>
+        </section>
+      </main>
+    )
+  }
+
+  if (error || !audit) {
     return (
       <main className="page-shell">
         <section className="surface-card motion-fade-up">
@@ -554,7 +605,7 @@ export default async function AuditPage({ params }: AuditPageProps) {
           </Link>
           <h1 className="section-title mt-4 text-3xl sm:text-4xl">Аудит недоступен</h1>
           <p className="mt-3 max-w-2xl rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-700/50 dark:bg-rose-950/40 dark:text-rose-200">
-            {message}
+            {error ?? "Не удалось загрузить аудит"}
           </p>
         </section>
       </main>
