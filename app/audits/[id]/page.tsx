@@ -536,7 +536,30 @@ const fieldLabelMeta: Record<string, { label?: string; hint?: SeoHint }> = {
 
 export default async function AuditPage({ params }: AuditPageProps) {
   const { id } = await params
-  const audit = await getAudit(id)
+  let audit: Awaited<ReturnType<typeof getAudit>>
+
+  try {
+    audit = await getAudit(id)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Не удалось загрузить аудит"
+
+    return (
+      <main className="page-shell">
+        <section className="surface-card motion-fade-up">
+          <Link
+            href="/"
+            className="inline-flex text-sm text-cyan-700 hover:text-cyan-800 hover:underline dark:text-cyan-300 dark:hover:text-cyan-200"
+          >
+            ← К списку аудитов
+          </Link>
+          <h1 className="section-title mt-4 text-3xl sm:text-4xl">Аудит недоступен</h1>
+          <p className="mt-3 max-w-2xl rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-700/50 dark:bg-rose-950/40 dark:text-rose-200">
+            {message}
+          </p>
+        </section>
+      </main>
+    )
+  }
 
   const siteChecksRoot = asRecord(audit.site_checks) as SiteChecksShape
   const siteChecks = asRecord(siteChecksRoot.checks ?? siteChecksRoot) as SiteChecksData

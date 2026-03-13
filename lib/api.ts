@@ -1,7 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000"
 
+function getApiUrl() {
+  return API_URL.replace(/\/+$/, "")
+}
+
 export async function createAudit(domain: string) {
-  const response = await fetch(`${API_URL}/api/audits/`, {
+  const response = await fetch(`${getApiUrl()}/api/audits/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +29,7 @@ export async function createAudit(domain: string) {
 }
 
 export async function getAuditList() {
-  const response = await fetch(`${API_URL}/api/audits/`, {
+  const response = await fetch(`${getApiUrl()}/api/audits/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -49,16 +53,13 @@ export async function getAuditList() {
 
 export async function getAudit(id: string | number) {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/audits/${id}/`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    )
+    const response = await fetch(`${getApiUrl()}/api/audits/${id}/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    })
 
     const data = await response.json().catch(() => null)
 
@@ -82,7 +83,7 @@ export async function getAudit(id: string | number) {
 }
 
 export async function deleteAudit(id: string | number) {
-  const response = await fetch(`${API_URL}/api/audits/${id}/`, {
+  const response = await fetch(`${getApiUrl()}/api/audits/${id}/`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
